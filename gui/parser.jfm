@@ -1,0 +1,49 @@
+object FGUIFormular_1: TFGUIFormular
+  Left = 237
+  Top = -1
+  Width = 177
+  Height = 245
+  BorderIcons = [biSystemMenu, biMinimize]
+  Caption = 
+    '\\g18.de\daten$\schuelerdaten\Klassen\IT\IT0j\IT0-SperSi\Block_7' +
+    '\Projekt\mockup\parser.jfm'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  OldCreateOrder = True
+  Visible = True
+  WindowState = wsMaximized
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnResize = FormResize
+  PixelsPerInch = 96
+  TextHeight = 16
+  object jList1: TListBox
+    Left = 16
+    Top = 8
+    Width = 137
+    Height = 153
+    ItemHeight = 16
+    TabOrder = 0
+  end
+  object btnSave: TButton
+    Left = 16
+    Top = 176
+    Width = 59
+    Height = 25
+    Caption = 'Save'
+    TabOrder = 1
+  end
+  object btnCancel: TButton
+    Left = 88
+    Top = 176
+    Width = 67
+    Height = 25
+    Caption = 'Cancel'
+    TabOrder = 2
+  end
+end
