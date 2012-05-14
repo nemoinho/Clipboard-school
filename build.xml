@@ -1,0 +1,72 @@
+<project name="Clipboard_manager" default="build" basedir=".">
+
+	<!-- project settings, jar names -->
+	<property name="project.version" value="1.0" />
+	<property name="project.name" value="clipboard_manager" />
+	<property name="build.jar" value="${project.name}-${project.version}.jar" />
+	<property name="manifest.classpath" value="" />
+
+	<!-- classpath definition -->
+	<path id="classpath">
+		<fileset dir="lib" includes="*.jar"/>
+	</path>
+
+
+	<!--  Initialises the build -->
+	<target name="clean">
+		<delete dir="bin" />
+		<delete dir="jar" />
+		<delete dir="delivery" />
+	</target>
+
+	<target name="prepare">
+		<mkdir dir="bin" />
+		<mkdir dir="jar" />
+	</target>
+
+	<!-- compiles the java files -->
+	<target name="compile">    	
+		<javac srcdir="src" destdir="bin" classpathref="classpath" debug="on">
+			<include name="**/*.java" />
+		</javac>
+	</target>
+
+
+	<!-- generates the jar-file  -->
+	<target name="jar" depends="compile">
+		<jar jarfile="jar/${build.jar}"
+				basedir="bin"
+				includes="com/**">
+
+			<manifest>
+				<attribute name="Main-Class" value="Manager" />
+				<attribute name="Class-Path" value="${manifest.classpath}"/>
+			</manifest>
+
+		</jar>
+	</target>
+
+	<target name="delivery" depends="jar">
+		<copy todir="delivery/${project.name}-${project.version}">
+			<fileset dir="jar">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="lib">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir=".">
+				<include name="*.sh"/>
+				<include name="*.bat"/>
+				<include name="*.properties"/>
+			</fileset>
+		</copy>		
+	</target>
+
+
+	<!-- alias tasks -->
+	<target name="all" depends="clean,prepare,jar,delivery" />
+	<target name="build" depends="jar,delivery" />
+
+
+</project>
+
