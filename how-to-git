@@ -1,0 +1,115 @@
+Wie kann ich das Projekt weiter entwickeln? Zu dieser Frege folgt hier eine
+kurze Anleitung, die beschreibt, wie man das Projekt bei sich lokal speichert,
+weiter entwickelt und die Änderungen wieder zum Master hinzufügt.
+
+Die ersten 3 Schritte richten git auf dem Rechner ein, wenn dies bereits
+geschehen ist, sollten sie übersprungen werden.
+
+Schritt 1: Git installieren
+	o Auf Unixoiden Systemen ist git i.d.R. in den Repositories enthalten, und
+	  kann darüber installiert werden.
+		- Debian, Ubuntu  andere Debian-basierte apt-get Systeme
+			apt-get install git
+		- SuSe, Slackware weitere Slackware-basierte Systeme oder ähnliche
+			zypper install git
+	
+	o Auf Windows einfach den aktuellsten Stand von der Projektseite downloaden
+	  und den Anweisungen entsprechend installieren.
+	  Und zum arbeiten mit git im Anschluss die "git Bash" nutzen!
+
+	o Mac lasse ich hier mal fallen, benutzt eh kein normaler Mensch zum
+	  programmieren.
+
+	o Der Installationsschritt ist auch sehr ausführlich auf github-help
+	  beschrieben:
+		http://help.github.com/linux-set-up-git/
+		http://help.github.com/win-set-up-git/
+		http://help.github.com/mac-set-up-git/
+
+Schritt 2: SSH-Key erzeugen
+	o Auf Windows die "git Bash" öffnen, ansonsten ein Terminalfenster öffnen.
+	o folgende Anweisungen ausführen:
+		cd ~/.ssh
+		ls                    # Prüfen ob bereits ein key Existiert, wenn nein,
+		mkdir key_backup      # die nächsten 3 Anweisungen überspringen
+		cp id_rsa* key_backup
+		rm id_rsa*
+		ssh-keygen -t rsa -C "meine@e-mail.tld" # Diesen Schitt auf jedenfall
+		                                        # wieder ausführen und
+		                                        # Dateinamensfrage bestätigen
+		                                        # Anschließend eine Passphrase
+		                                        # festlegen.
+	o Nachdem ein ssh-Key erstellt wurde diesen nun bei github hochladen, dazu
+	  auf https://github.com/settings/ssh auf "Add SSH key" klicken und die
+	  Datei id_rsa.pub eins-zu-eins in das Textfeld kopieren.
+	o SSH testen, dazu auf der "git Bash" oder dem Terminal folgendes eingeben:
+		ssh -T git@github.com
+	  eventuell muss der Schlüssel zuvor noch für SSH bekannt gemacht werden,
+	  das passiert mit der folgenden Zeile:
+		ssh-add ~/.ssh/id_rsa
+
+Schritt 3: Nutzerinformationen einrichten:
+	o An diesem Punkt am besten die Daten angeben, die man auch bei seiner
+	  Anmeldung bei github angegeben hat. Die Informationen dienen dazu den
+	  gesendeten commit einem Nutzer zuzuteilen, sowie an den github-Account zu
+	  binden.
+		git config --global user.name "Vorname Nachname"
+		git config --global user.email "meine@e-mail.tld"
+
+Schritt 4: Das Projekt forken
+	o Wie der Name schon sagt, geht es darum, das Projekt zu teilen und einen
+	  eigenen Zweig zum Entwickeln einzurichten. Dazu wird bei dem Projekt der
+	  Wahl der Fork-Button auf github betätigt, so dass das Projekt zum
+	  Bearbeiten auf das eigene github-Konto projeziert wird.
+	o Anschließend wird auf der Kommandozeile ein Clon des Projekts in dem
+	  Ordner in dem man sich befindet erstellt.
+		cd ~/git
+		git clone git@github.com:USERNAME/Clipboard-school.git # USERNAME durch
+		                                                       # den eigenen
+		                                                       # ersetzen.
+	o Um nun noch über Änderungen am Original informiert zu werden und diese in
+	  den eigenen Fork einfließen zu lassen sind noch folgende Zeilen nötig:
+		cd ~/git/Clipboard-school
+		git remote add upstream git://github.com/nemoinho/Clipboard-school.git
+		git fetch upstream
+	o Die so eingerichteten Updates können nun über das Terminal eingespielt
+	  werden, am besten halt vor jedem eigenen commit, wie man es auch von
+	  anderen Versionierungssystemen gewohnt ist.
+	  Entweder zuerst alles neue holen und dann manuell mergen
+		git fetch
+		git merge
+	  Oder beides zusammen machen
+		git pull
+	o Um eigene Änderungen zum master hochzuladen wird der folgende Befehl
+	  genutzt:
+		git push origin master
+
+Schritt 5: Änderungen pflegen
+	o Eine Sache die man bei git sehr angenehm machen kann ist es oft auf das
+	  locale Repository zu commiten, auch wenn man seine Arbeit noch nicht
+	  abgeschlossen hat. Dies ist möglich, da man die commits im Nachhinein
+	  zusammenfassen kann. Um diesen Punkt zu erklären hier ein Beispiel:
+		# Mehrer Änderungen an einer Datei wurden vorgenommen
+		git add geänderte/Datei.dat
+		git commit -m "... Mehrere Änderungen Committext ..."
+		# Eine Datei wurde hinzugefügt
+		git add Datei/hinzugefügt.txt
+		git commit -m "Neue Datei hinzugefügt"
+		git rebase -i HEAD~3 # Die letzten 3 Commits zum bearbeiten öffnen
+		                     # In dieser Ansicht kann man die commits
+		                     # zusammenfassen, oder wenn es sein muss sogar
+		                     # nachträglich löschen. So trägt git dazu bei das
+		                     # Projekt sehr klar mit updates zu versorgen.
+		git push # Änderungen in den eigenen Fork hochladen, wenn die Änderungen
+		         # fertig sind wie oben beschrieben in den master pushen. Z.B.:
+		git push origin master
+
+Weitere Informationen:
+Wie gesagt ist die Hilfeseite von github ein guter Einstieg in die Materie:
+	http://help.github.com/fork-a-repo/
+	http://help.github.com/send-pull-requests/
+
+Desweiteren git es noch diverse gute Onlinetuts, wobei ich hier vor allem eine
+kleine Präsentation hervorheben will:
+	http://ls11-www.cs.tu-dortmund.de/people/martin/git/erste-schritte-mit-git.html
+
