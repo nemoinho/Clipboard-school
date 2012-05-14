@@ -31,7 +31,7 @@ Coding conventions
 - Umbrüche in Parameterlisten werden um zwei Tabstop eingerückt
 - Jede Methode verfügt über einen englischsprachigen JavaDoc-Kommentar, außer es
   besteht bereits ein Kommentar aus einem Interface oder einer Elternklasse,
-sofern sich die beschriebene Funktionalität nicht geändert hat.
+  sofern sich die beschriebene Funktionalität nicht geändert hat.
 - nach dem package-Bezeichner folgt eine Leerzeile
 - Die Import-Anweisungen stehen ohne Leerzeilen in einem Block, danach folgt
   eine Leerzeile
@@ -42,6 +42,12 @@ sofern sich die beschriebene Funktionalität nicht geändert hat.
     mittels einer zusätzlichen Methode aus einer Parameterdatei geladen
 - keine Hardcodierten Werte verwenden!
 - Konfigurationsangaben werden in eine properties-Datei ausgelagert
+- Ansonsten gelten allgemeine Java coding conventions, die 3 wichtigsten folgen:
+	+ Klassen werden in CamelCase geschrieben, der erste Buchstabe ist groß
+	+ Methoden und Variablen werden camelCase geschrieben, der erste Buchstabe
+	  ist klein
+	+ Konstante werden komplett groß geschrieben und Worte durch Unterstriche 
+	  getrennt
 
 Zeitplan
 15.05.2012 - Zusammenfassung der Ergebnisse und Beratung zu etwailigen Fehlern
