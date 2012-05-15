@@ -5,6 +5,7 @@
 	<property name="project.name" value="clipboard_manager" />
 	<property name="build.jar" value="${project.name}-${project.version}.jar" />
 	<property name="manifest.classpath" value="" />
+	<property name="manifest.mainclass" value="core.Manager" />
 
 	<!-- classpath definition -->
 	<path id="classpath">
@@ -36,10 +37,10 @@
 	<target name="jar" depends="compile">
 		<jar jarfile="jar/${build.jar}"
 				basedir="bin"
-				includes="com/**">
+				includes="core/**">
 
 			<manifest>
-				<attribute name="Main-Class" value="Manager" />
+				<attribute name="Main-Class" value="${manifest.mainclass}" />
 				<attribute name="Class-Path" value="${manifest.classpath}"/>
 			</manifest>
 
