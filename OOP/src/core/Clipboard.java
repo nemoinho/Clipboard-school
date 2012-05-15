@@ -20,7 +20,7 @@ public class Clipboard extends Observable implements Runnable {
 
 	@Override
 	public void run() {
-		while(true){
+		for(;;){
 			String clip = getClipboard();
 			if(clip != null && !clip.equals(getEntry())){
 				setEntry(clip);
@@ -28,7 +28,7 @@ public class Clipboard extends Observable implements Runnable {
 				notifyObservers(clip);
 			}
 			try {
-				Thread.sleep(25);
+				Thread.sleep(50);
 			} catch (InterruptedException e) { // ignore 
 			} catch (Exception e) {
 				// etwas Spaß bei der Fehlermeldung, falls mal wirklich was passiert
