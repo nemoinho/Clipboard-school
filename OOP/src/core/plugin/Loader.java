@@ -1,4 +1,4 @@
-package core.plugin.bytehawks;
+package core.plugin;
 
 /**
  *
@@ -10,6 +10,7 @@ package core.plugin.bytehawks;
 import java.util.Vector;
 import java.util.Enumeration;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.FilenameFilter;
 import java.io.BufferedReader;
@@ -19,8 +20,8 @@ import java.util.jar.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import core.plugin.bytehawks.interfaces.Plugin;
-import core.plugin.bytehawks.interfaces.PluginLoader;
+import core.plugin.interfaces.Plugin;
+import core.plugin.interfaces.PluginLoader;
 
 
 public class Loader implements PluginLoader {
@@ -41,35 +42,32 @@ public class Loader implements PluginLoader {
 		plugins = new Vector<Plugin>();
 	}
 
-	public void load() {
-		try {
-			File pluginDir = new File(PLUGIN_FOLDER);
-			File[] pluginJars = pluginDir.listFiles(pluginFilenameFilter);
-			for (File pluginJar : pluginJars) {
-				String name = "FAIL";
-				JarFile jarFile = new JarFile(pluginJar);
-				for (Enumeration<JarEntry> entries = jarFile.entries(); entries
-						.hasMoreElements();) {
-					JarEntry entry = entries.nextElement();
-					if (entry.getName().endsWith(PLUGIN_FILE))
-						name = (new BufferedReader(new InputStreamReader(
-								jarFile.getInputStream(entry)))).readLine();
-				}
-				jarFile.close();
-				if (name.equals("FAIL"))
-					continue;
-				URLClassLoader urlCL = new URLClassLoader(new URL[] { pluginJar
-						.toURI().toURL() });
-				Class<?> pluginClass = urlCL.loadClass(name);
-				Plugin plugin = (Plugin) pluginClass.newInstance();
-				plugin.loadPlugin(this);
-				plugins.add(plugin);
+	public void load() throws IOException, IllegalAccessException,
+			InstantiationException, Exception {
+		File pluginDir = new File(PLUGIN_FOLDER);
+		File[] pluginJars = pluginDir.listFiles(pluginFilenameFilter);
+		for (File pluginJar : pluginJars) {
+			String name = "FAIL";
+			JarFile jarFile = new JarFile(pluginJar);
+			for (Enumeration<JarEntry> entries = jarFile.entries(); entries
+					.hasMoreElements();) {
+				JarEntry entry = entries.nextElement();
+				if (entry.getName().endsWith(PLUGIN_FILE))
+					name = (new BufferedReader(new InputStreamReader(
+							jarFile.getInputStream(entry)))).readLine();
 			}
-			for (Plugin plugin : plugins) {
-				plugin.startPlugin();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			jarFile.close();
+			if (name.equals("FAIL"))
+				continue;
+			URLClassLoader urlCL = new URLClassLoader(new URL[] { pluginJar
+					.toURI().toURL() });
+			Class<?> pluginClass = urlCL.loadClass(name);
+			Plugin plugin = (Plugin) pluginClass.newInstance();
+			plugin.loadPlugin(this);
+			plugins.add(plugin);
+		}
+		for (Plugin plugin : plugins) {
+			plugin.startPlugin();
 		}
 	}
 
@@ -87,12 +85,12 @@ public class Loader implements PluginLoader {
 		return null;
 	}
 
-	public void shutdown() {
+	public void shutdown() throws ShutdownException {
 		for (Plugin plugin : plugins) {
 			try {
 				plugin.stopPlugin();
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new ShutdownException();
 			}
 		}
 	}
@@ -110,8 +108,14 @@ public class Loader implements PluginLoader {
 	 * the reload method for the pluginloader
 	 */
 	public void reload() {
-		this.shutdown();
-		this.load();
+		try{
+			this.shutdown();
+			this.load();
+		} catch (ShutdownException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

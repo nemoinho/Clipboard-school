@@ -5,7 +5,7 @@
  * @version 1.0 vom 11.05.2012
  * @author Tobias Schult
  */
-package core.plugin.bytehawks.interfaces;
+package core.plugin.interfaces;
 
 public interface Plugin {
 	public final String pluginName = "";

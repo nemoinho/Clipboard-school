@@ -1,4 +1,4 @@
-package core.plugin.bytehawks.interfaces;
+package core.plugin.interfaces;
 
 /**
  *
@@ -26,12 +26,12 @@ public interface PluginLoader {
 	/**
 	 * the load method is the constructor of the plugin
 	 */
-	public void load();
+	public void load() throws Exception;
 
 	/**
 	 * the shutdown method is a finalze method
 	 */
-	public void shutdown();
+	public void shutdown() throws Exception;
 
 	/**
 	 * shoud return a ptringlist of the plugins
