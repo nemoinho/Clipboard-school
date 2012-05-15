@@ -12,9 +12,13 @@ public class Clipboard extends Observable implements Runnable {
 
 	private String entry = null;
 
+	/**
+	 * Empty Constructor
+	 */
 	public Clipboard() {
 	}
 
+	@Override
 	public void run() {
 		while(true){
 			String clip = getClipboard();
@@ -33,6 +37,10 @@ public class Clipboard extends Observable implements Runnable {
 		}
 	}
 
+	/**
+	 * Get the current content from the clipboard
+	 * @return String clipboard-content
+	 */
 	public static String getClipboard() {
 		Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 		try {
@@ -46,15 +54,27 @@ public class Clipboard extends Observable implements Runnable {
 		return null;
 	}
 
+	/**
+	 * Sets a new String to the clipboard
+	 * @param String new content for clipboard
+	 */
 	public static void setClipboard(String str) {
 		StringSelection ss = new StringSelection(str);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
 	}	
 
+	/**
+	 * Returns the newest read clipboard entry
+	 * @return String clipboard entry
+	 */
 	public String getEntry() {
 		return entry;
 	}
 
+	/**
+	 * Sets a completely new clipboard entry
+	 * @param String clipboard entry
+	 */
 	public void setEntry(String entry) {
 		this.entry = entry;
 	}

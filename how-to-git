@@ -83,6 +83,8 @@ Schritt 4: Das Projekt forken
 	o Um eigene Änderungen zum master hochzuladen wird der folgende Befehl
 	  genutzt:
 		git push origin master
+	  In den eigenen Fork läd man mit fast dem selben Befehl:
+		git push
 
 Schritt 5: Änderungen pflegen
 	o Eine Sache die man bei git sehr angenehm machen kann ist es oft auf das
