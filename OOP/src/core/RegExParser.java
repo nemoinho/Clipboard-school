@@ -3,14 +3,13 @@ package core;
 import java.util.HashMap;
 import java.util.Set;
 
-import core.plugin.bytehawks.interfaces.Plugin;
-import core.plugin.bytehawks.interfaces.PluginLoader;
-
-
+import core.plugin.interfaces.Plugin;
+import core.plugin.interfaces.PluginLoader;
 
 public class RegExParser implements Parser, Plugin {
-
+	
 	private HashMap<String, String> params;
+	private String name;
 	
 	public RegExParser() {
 		params = new HashMap<String, String>();
@@ -31,33 +30,33 @@ public class RegExParser implements Parser, Plugin {
 		return params.keySet();
 	}
 	
+	public HashMap<String, String> getParams() {
+		return this.params;
+	}
+	
 	public void setParam(String key, String value) {
 		params.remove(key);
 		params.put(key, value);
 	}
+
+	@Override
+	public void startPlugin() throws Exception {}
+	@Override
+	public void stopPlugin() throws Exception {}
+	@Override
+	public void loadPlugin(PluginLoader loader) throws Exception {}
 	
-	public static void main(String[] args) {
-		
-	}
-
-	@Override
-	public void startPlugin() throws Exception {
-		//
-		
-	}
-
-	@Override
-	public void stopPlugin() throws Exception {
-		// Nothing for now..
-		
-	}
-
-	@Override
-	public void loadPlugin(PluginLoader loader) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 	public Parser getParser() {
 		return this;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
 	}
 }
