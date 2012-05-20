@@ -9,6 +9,7 @@ nachzuvollziehen.
 │Version│Author    │Änderung                                        │Datum     │
 ┝━━━━━━━┿━━━━━━━━━━┿━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┿━━━━━━━━━━┥
 │  1.0  │nemoinho  │Erstellung des Dokuments                        │11.05.2012│
+│  1.1  │nemoinho  │Definition von Aufbau und Struktur der Klassen  │20.05.2012│
 └───────┴──────────┴────────────────────────────────────────────────┴──────────┘
 
 Einteilung der Collaborators
@@ -52,3 +53,30 @@ Coding conventions
 Zeitplan
 15.05.2012 - Zusammenfassung der Ergebnisse und Beratung zu etwailigen Fehlern
              und Verbesserungen.
+
+Aufbau und Struktur
+Um das Projekt weiterhin transparent verwalten zu können ist es notwendig die
+Klassenstruktur eindeutig zu halten und diese thematisch zu trennen.
+Aus diesem Grund wird die folgende Struktur vorgeschlagen. Hierbei ist zu
+beachten, dass das Programm als solches dumm ist und nur die Verwaltung des
+Clipboard beherscht. Alle weiteren Funktionalitäten sollten mindestens per
+Observer-Pattern oder idealerweise in Plugins realisiert werden.
+╤
+├─┬ core/
+│ ├─┬ gui/
+│ │ ╰─ BeispielFenster.java
+│ │
+│ ├─┬ sessionManagement/
+│ │ ╰─ SpeicherBeispiel.java
+│ │
+│ ├─┬ plugin/
+│ │ ╰─ PluginKlassen.java
+│ │
+│ ╰─ Manager.java
+│
+╰─┬ plugins/
+  ╰─ BeispielParser.jar
+
+Um diese Anforderungen zu erfüllen ist es sehr wichtig, die Pluginschnittstellen
+eindeutig zu identifizieren und bei der Entwicklung darauf zu achten, dass die
+Module unabhängig voneinander sind.
