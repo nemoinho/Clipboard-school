@@ -3,8 +3,8 @@ package core;
 import java.util.HashMap;
 import java.util.Set;
 
-import core.plugin.bytehawks.interfaces.Plugin;
-import core.plugin.bytehawks.interfaces.PluginLoader;
+import core.plugin.interfaces.Plugin;
+import core.plugin.interfaces.PluginLoader;
 
 
 

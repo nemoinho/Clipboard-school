@@ -2,7 +2,7 @@ package core;
 
 import java.util.ArrayList;
 
-import core.plugin.bytehawks.Loader;
+import core.plugin.Loader;
 
 public class Profile {
 	private ArrayList<Parser> parserList = new ArrayList<Parser>();
@@ -37,7 +37,11 @@ public class Profile {
 	
 	public void initPlugins() {
 		Loader l = new Loader();
-		l.load();
+		try {
+			l.load();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		ArrayList<String> plugins = l.getPluginList();
 		
 		initParser(l);
