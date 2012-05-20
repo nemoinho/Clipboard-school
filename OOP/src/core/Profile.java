@@ -64,7 +64,7 @@ public class Profile {
 		return p.getParamNames();
 	}
 	
-	public void setParserParam(Parser p, String param, String value) {
+	public void setParserParam(Parser p, String param, Object value) {
 		p.setParam(param, value);
 	}
 	
@@ -116,7 +116,7 @@ public class Profile {
 		par.setParam("replace", "REPLACED");
 		
 		for(String param : par.getParamNames()) {
-			System.out.println(param + ": " + par.getParams().get(param));
+			System.out.println(param + ": " + par.getParams().get(param) + " (" + par.getParams().get(param).getClass() + ")");
 		}
 		System.out.println(parse_test + ": " + par.parse(parse_test));
 	}

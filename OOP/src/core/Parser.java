@@ -11,9 +11,9 @@ public interface Parser {
 	 */
 	
 	public String parse(String input);
-	public HashMap<String, String> getParams();
+	public HashMap<String, Object> getParams();
 	public Set<String> getParamNames();
-	public void setParam(String key, String value);
+	public void setParam(String key, Object value);
 	
 	/**
 	 * 
@@ -22,4 +22,5 @@ public interface Parser {
 	public Parser getParser();
 	public String getName();
 	public void setName(String name);
+	public String getDescription();
 }
