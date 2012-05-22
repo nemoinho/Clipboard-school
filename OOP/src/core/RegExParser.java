@@ -7,6 +7,7 @@ import core.plugin.interfaces.Plugin;
 import core.plugin.interfaces.PluginLoader;
 
 public class RegExParser implements Parser, Plugin {
+
 	private HashMap<String, Object> params;
 	private String name;
 	
@@ -16,10 +17,11 @@ public class RegExParser implements Parser, Plugin {
 		params.put("replace", "");
 		name = "RegEx Parser";
 	}
-	
+
 	/**
 	 * parse input using the match & replace param
 	 */
+	@Override
 	public String parse(String input) {
 		try {
 			return input.replaceAll((String)params.get("match"), (String)params.get("replace"));
@@ -43,8 +45,10 @@ public class RegExParser implements Parser, Plugin {
 
 	@Override
 	public void startPlugin() throws Exception {}
+
 	@Override
 	public void stopPlugin() throws Exception {}
+
 	@Override
 	public void loadPlugin(PluginLoader loader) throws Exception {}
 	
