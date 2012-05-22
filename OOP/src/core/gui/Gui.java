@@ -142,8 +142,6 @@ public class Gui extends JFrame implements Observer {
 		//TODO manager.addProfile(n);
 		//TODO manager.setProfile(index);
 		jcProfile.setSelectedIndex(index);
-		
-		pContainer.add(new JLabel(n));
 	}
 
 	// Anfang Methoden
