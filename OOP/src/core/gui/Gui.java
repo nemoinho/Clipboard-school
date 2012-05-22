@@ -1,40 +1,59 @@
 package core.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.util.*;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+
+import core.Constants;
+import core.Manager;
 
 /**
- *
+ * 
  * Beschreibung
- *
+ * 
  * @version 1.0 vom 22.03.2012
  * @author
  */
 
-public class Gui extends JFrame {
+public class Gui extends JFrame implements Observer {
 	// Anfang Attribute
-	private Profile dialog;
-	private String[] jList1Data = {"Entry 1","Entry 2","Entry 3","Entry 4"};
-	private ArrayList<String> test = new ArrayList<String>();
-	private JList jList1 = new JList(jList1Data);
+	private Manager manager;
+	
+	private GProfile dialog;
+	private JList entries;
 	private JCheckBox actParser = new JCheckBox();
 	private JButton Del = new JButton();
 	private JButton jButton1 = new JButton();
 	private JTextField parsed = new JTextField();
 	private JLabel jLabel1 = new JLabel();
 	private JLabel jLabel2 = new JLabel();
-	private String[] jcProfileData = {"Profile 1"};
+	private String[] jcProfileData = { "Profile 1" };
 	private JComboBox jcProfile = new JComboBox(jcProfileData);
 	private JButton jbPlus = new JButton();
 	private JButton jbMinus = new JButton();
+
 	// Ende Attribute
 
 	public Gui(String title) {
 		// Frame-Initialisierung
 		super(title);
+		this.manager = new Manager();
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		int frameWidth = 239;
 		int frameHeight = 508;
@@ -46,9 +65,10 @@ public class Gui extends JFrame {
 		Container cp = getContentPane();
 		cp.setLayout(null);
 		// Anfang Komponenten
-
-		jList1.setBounds(16, 32, 185, 225);
-		cp.add(jList1);
+		entries = new JList(); // TODO: manager.getEntries();
+		entries.setBounds(16, 32, 185, 225);
+		cp.add(entries);
+		
 		actParser.setBounds(16, 368, 17, 25);
 		actParser.setText("");
 		cp.add(actParser);
@@ -66,7 +86,7 @@ public class Gui extends JFrame {
 		jButton1.setMargin(new Insets(2, 2, 2, 2));
 		jButton1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				new Parser("Parser");
+				new GParser("Parser", manager);
 			}
 		});
 		cp.add(jButton1);
@@ -82,6 +102,13 @@ public class Gui extends JFrame {
 		jLabel2.setFont(new Font("MS Sans Serif", Font.PLAIN, 13));
 		cp.add(jLabel2);
 		jcProfile.setBounds(16, 328, 121, 24);
+		jcProfile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int index = jcProfile.getSelectedIndex();
+				//TODO manager.setProfile(index);
+			}
+		});
 		cp.add(jcProfile);
 		jbPlus.setBounds(144, 328, 27, 25);
 		jbPlus.setText("+");
@@ -101,30 +128,39 @@ public class Gui extends JFrame {
 			}
 		});
 		cp.add(jbMinus);
+		
 		// Ende Komponenten
 
 		setResizable(false);
 		setVisible(true);
 	}
 
-	// Fügt ein neues Profil hinzu
+	// FÃ¼gt ein neues Profil hinzu
 	public void addNewProfile(String n) {
-		jcProfile.insertItemAt(n, 0);
-		jcProfile.setSelectedIndex(0);
+		int index = jcProfile.getItemCount();
+		jcProfile.insertItemAt(n, index);
+		//TODO manager.addProfile(n);
+		//TODO manager.setProfile(index);
+		jcProfile.setSelectedIndex(index);
+		
+		pContainer.add(new JLabel(n));
 	}
 
 	// Anfang Methoden
 	public void Del_ActionPerformed(ActionEvent evt) {
-		// TODO hier Quelltext einfügen
+		
 	}
 
-
 	public void jbMinus_ActionPerformed(ActionEvent evt) {
-		jcProfile.removeItemAt(jcProfile.getSelectedIndex());
+		if(jcProfile.getItemCount() >= 2) {
+			int index = jcProfile.getSelectedIndex();
+			jcProfile.removeItemAt(index);
+			//TODO manager.removeProfile(index);
+		}
 	}
 
 	public void jbPlus_ActionPerformed(ActionEvent evt) {
-		dialog = new Profile(this,"New parser",true);
+		dialog = new GProfile(this, "New parser", true);
 		addNewProfile(dialog.getInput());
 	}
 
@@ -137,5 +173,18 @@ public class Gui extends JFrame {
 			e.printStackTrace();
 		}
 		new Gui("Clipboard");
+		
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// arg0 : egal
+		// arg1 : (String) case der aufgetreten ist.
+		String _case = (String) arg1;
+		
+		if(_case == Constants.OBSERVE_ENTRY) {
+			this.entries.removeAll();
+			//TODO this.entries.setListData(manager.getEntries());
+		}
 	}
 }

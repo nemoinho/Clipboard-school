@@ -85,12 +85,12 @@ public class Loader implements PluginLoader {
 		return null;
 	}
 
-	public void shutdown() throws ShutdownException {
+	public void shutdown() /*throws ShutdownException*/ {
 		for (Plugin plugin : plugins) {
 			try {
 				plugin.stopPlugin();
 			} catch (Exception e) {
-				throw new ShutdownException();
+				/*throw new ShutdownException();*/
 			}
 		}
 	}
@@ -111,9 +111,9 @@ public class Loader implements PluginLoader {
 		try{
 			this.shutdown();
 			this.load();
-		} catch (ShutdownException e) {
+		}/* catch (ShutdownException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
+		}*/ catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
