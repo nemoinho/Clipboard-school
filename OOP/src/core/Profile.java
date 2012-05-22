@@ -12,9 +12,23 @@ public class Profile {
 	private ArrayList<Parser> parserList = new ArrayList<Parser>();
 	private ArrayList<Parser> activeParserList = new ArrayList<Parser>();
 	
+	public Profile(){
+		try {
+			initPlugins();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private void initParser(Loader loader) {
 		ArrayList<String> plugins = loader.getPluginList();
 		try {
+//			for(Plugin p : loader.getPlugins()){
+//				if(p instanceof Parser){
+//					this.addParser(p, p.getClass().getName());
+//				}
+//			}
 			for(String plugin : plugins) {
 				Object test = loader.invoke(plugin, "getParser");
 				if(test != null) {

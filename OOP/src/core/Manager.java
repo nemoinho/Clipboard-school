@@ -1,15 +1,16 @@
 package core;
 
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import core.Clipboard;
 import core.Entry;
+import core.Constants;
 
-public class Manager implements Observer {
+public class Manager extends Observable implements Observer {
 	private Clipboard clipboard = null;
-	private ArrayList<Entry> entries = new ArrayList<Entry>();
+	private Vector<Entry> entries = new Vector<Entry>();
 	private HashMap<String, String> profiles = new HashMap<String, String>();
 
 	/**
@@ -36,10 +37,28 @@ public class Manager implements Observer {
 		clipboard.addObserver(this);
 	}
 
+	/**
+	 * gets the list of entries for the gui, or other observers
+	 */
+	public Vector getEntries(){
+		return entries;
+	}
+
+	public void addProfile(int index){
+	}
+
+	public void removeProfile(int index){
+	}
+
+	public void setProfile(int index){
+	}
+
 	@Override
 	public void update(Observable obs, Object o){
 		if(o instanceof String){
-			entries.add(new Entry((String)o));
+			entries.add(new Entry((String)o)); 
+			setChanged();
+			notifyObservers(Constants.OBSERVE_ENTRY);
 		} 
 	}
 
