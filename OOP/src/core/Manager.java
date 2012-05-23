@@ -11,7 +11,7 @@ import core.Constants;
 public class Manager extends Observable implements Observer {
 	private Clipboard clipboard = null;
 	private Vector<Entry> entries = new Vector<Entry>();
-	private HashMap<String, String> profiles = new HashMap<String, String>();
+	private HashMap<String, Profile> profiles = new HashMap<String, Profile>();
 
 	/**
 	 * Constructor build a Managementprogramm
@@ -40,17 +40,28 @@ public class Manager extends Observable implements Observer {
 	/**
 	 * gets the list of entries for the gui, or other observers
 	 */
-	public Vector getEntries(){
+	public Vector<Entry> getEntries(){
 		return entries;
 	}
 
-	public void addProfile(int index){
+	public boolean addProfile(String profileName){
+		
+		if(!profiles.containsKey(profileName)){
+			Profile p = new Profile();
+			p.setName(profileName);
+			profiles.put(profileName, p);
+			return true;
+		}
+		return false;
 	}
 
-	public void removeProfile(int index){
+	public void removeProfile(String profileName){
+		if(profiles.get(profileName) != null){
+			profiles.remove(profileName);
+		}
 	}
 
-	public void setProfile(int index){
+	public void setProfile(String profileName){
 	}
 
 	@Override

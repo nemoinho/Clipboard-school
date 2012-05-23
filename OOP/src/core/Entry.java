@@ -15,5 +15,9 @@ public class Entry {
 		creationTime = new Date();
 		original = orig;
 	}
+	
+	public String getOriginal(){
+		return original;
+	}
 }
 
