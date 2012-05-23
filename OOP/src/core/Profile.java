@@ -20,7 +20,10 @@ public class Profile {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * loads Parser-Objects
+	 * @param loader
+	 */
 	private void initParser(Loader loader) {
 		ArrayList<String> plugins = loader.getPluginList();
 		try {
@@ -39,18 +42,31 @@ public class Profile {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Loads Plugins, currently only Parser in use.
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @throws IOException
+	 * @throws Exception
+	 */
 	public void initPlugins() throws IllegalAccessException, InstantiationException, IOException, Exception {
 		Loader l = new Loader();
 		l.load();
 		initParser(l);
 	}
-	
+	/**
+	 * add a parser to the profile
+	 * @param p
+	 * @param name
+	 */
 	public void addParser(Parser p, String name) {
 		p.setName(name);
 		this.parserList.add(p);
 	}
-	
+	/**
+	 * get all available Parser-Objects
+	 * @return
+	 */
 	public ArrayList<Parser> getParser() {
 		return this.parserList;
 	}
@@ -69,34 +85,64 @@ public class Profile {
 		}
 		return null;
 	}
-	
+	/**
+	 * set the name of a Parser
+	 * @param p
+	 * @param name
+	 */
 	public void setParserName(Parser p, String name) {
 		p.setName(name);
 	}
-	
+	/**
+	 * get a Key-Set of parameters of a Parser
+	 * @param p
+	 * @return
+	 */
 	public Set<String> getParserParams(Parser p) {
 		return p.getParamNames();
 	}
-	
+	/**
+	 * Set Parser parameter by key, value
+	 * @param p
+	 * @param param
+	 * @param value
+	 */
 	public void setParserParam(Parser p, String param, Object value) {
 		p.setParam(param, value);
 	}
-	
+	/**
+	 * deactivate a Parser
+	 * @param p
+	 */
 	public void removeFromActive(Parser p) {
 		this.activeParserList.remove(p);
 	}
-	
+	/**
+	 * activate a Parser
+	 * @param p
+	 */
 	public void addToActive(Parser p) {
 		this.activeParserList.add(p);
 	}
+	/**
+	 * returns currently active Parser Objects
+	 * @return
+	 */
 	public ArrayList<Parser> getActiveParser() {
 		return this.activeParserList;
 	}
 	
+	/**
+	 * returns profile name
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
-
+	/**
+	 * Sets profile name
+	 * @param name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}

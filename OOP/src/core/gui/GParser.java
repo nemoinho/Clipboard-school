@@ -122,7 +122,7 @@ public class GParser extends JFrame {
 	
 	private void parserSelected() {
 		Profile profile = manager.getProfile();
-		// TODO: Fix manager / GUI to actually CHANGE the active Parser.
+		// TODO: Fix manager / GUI to actually CHANGE the active Profile.
 		System.out.println(profile);
 		Parser p = profile.getParserByName((String)jList1.getSelectedValue());
 		parserConfig(p);
