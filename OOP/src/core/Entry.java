@@ -15,5 +15,17 @@ public class Entry {
 		creationTime = new Date();
 		original = orig;
 	}
+	
+	public String getOriginal(){
+		return original;
+	}
+	
+	public void setModified(String modified) {
+		this.modified = modified;
+	}
+	
+	public String getModified() {
+		return modified;
+	}
 }
 

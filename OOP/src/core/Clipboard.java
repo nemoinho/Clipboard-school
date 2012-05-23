@@ -77,6 +77,7 @@ public class Clipboard extends Observable implements Runnable {
 	 */
 	public void setEntry(String entry) {
 		this.entry = entry;
+		setClipboard(entry);
 	}
 }
 

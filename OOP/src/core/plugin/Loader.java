@@ -104,6 +104,10 @@ public class Loader implements PluginLoader {
 		return pluginList;
 	}
 
+	public Vector<Plugin> getPlugins(){
+		return plugins;
+	}
+
 	/**
 	 * the reload method for the pluginloader
 	 */

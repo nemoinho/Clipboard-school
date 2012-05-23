@@ -2,6 +2,7 @@ package core.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -26,31 +27,34 @@ public class GParser extends JFrame {
 	private JList jList1;
 	private JButton btnSave = new JButton();
 	private JButton btnCancel = new JButton();
-
+	
+	private Manager manager;
+	private Container cp;
+	private ArrayList<GParserItem> parserItems = new ArrayList<GParserItem>();
 	// Ende Variablen
 
 	public GParser(String title, Manager manager) {
 		// Frame-Initialisierung
 		super(title);
+		this.manager = manager;
 		/*
 		 * addWindowListener(new WindowAdapter() { public void
 		 * windowClosing(WindowEvent evt) { this.dispose(); } });
 		 */
-		int frameWidth = 377;
+		int frameWidth = 427;
 		int frameHeight = 245;
 		setSize(frameWidth, frameHeight);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (d.width - getSize().width) / 2;
 		int y = (d.height - getSize().height) / 2;
 		setLocation(x, y);
-		Container cp = getContentPane();
+		cp = getContentPane();
 		cp.setLayout(null);
 		// Anfang Komponenten
-		Profile profile = new Profile();
 		
 		
 		Vector<String> parserList = new Vector<String>();
-		
+		Profile profile = manager.getProfile();
 		for(Parser p : profile.getParser()) {
 			parserList.add(p.getName());
 		}
@@ -60,7 +64,9 @@ public class GParser extends JFrame {
 			
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
-				parserSelected();
+				if(arg0.getValueIsAdjusting()) {
+					parserSelected();
+				}
 			}
 		});
 		jList1.setBounds(16, 8, 137, 153);
@@ -78,6 +84,7 @@ public class GParser extends JFrame {
 		btnCancel.setBounds(88, 176, 67, 25);
 		btnCancel.setText("Cancel");
 		cp.add(btnCancel);
+		
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				btnCancelActionPerformed(evt);
@@ -97,11 +104,12 @@ public class GParser extends JFrame {
 			selectedParser.add("" + jList1.getSelectedValues()[i]);
 		}
 		
-		Profile profile = new Profile();
-		//TODO Profile profile = manager.getProfile();
+		
+		Profile profile = manager.getProfile();
 		
 		for (String sp : selectedParser) {
-			profile.addToActive(profile.getParserByName(sp));
+			Parser p = profile.getParserByName(sp);
+			profile.addToActive(p);
 		}
 		
 		// sendParserToDatabase();
@@ -113,11 +121,66 @@ public class GParser extends JFrame {
 	}
 	
 	private void parserSelected() {
-		Profile profile = new Profile();
-		//TODO Profile profile = manager.getProfile();
+		Profile profile = manager.getProfile();
+		// TODO: Fix manager / GUI to actually CHANGE the active Parser.
+		System.out.println(profile);
 		Parser p = profile.getParserByName((String)jList1.getSelectedValue());
-		System.out.println(p);
+		parserConfig(p);
 	}
+	
+	private void parserConfig(Parser p) {
+		if(this.parserItems != null) {
+			for(GParserItem o : this.parserItems) {
+				cp.remove(o.getLabel());
+				cp.remove(o.getField());
+				this.parserItems.remove(o);
+			}
+		}
+		int i = 0;
+		int x = 180;
+		int y = 30;
+		for(String param : p.getParamNames()) {
+			GParserItem item = new GParserItem();
+			JLabel label = new JLabel(param);
+			label.setBounds(x, 5 + y * i++, 200, y);
+			item.setLabel(label);
+			
+			cp.add(item.getLabel());
+			
+			item.setParser(p);
+			Object value = p.getParams().get(param);
+			if(value instanceof String) {
+				JTextField configField = new JTextField((String)value);
+				configField.setBounds(x, 5 + y * i++, 200, 30);
+				configField.addKeyListener(new KeyListener() {
+					@Override
+					public void keyTyped(KeyEvent arg0) {}
+					@Override
+					public void keyReleased(KeyEvent arg0) {
+						paramChanged(arg0);
+					}
+					@Override
+					public void keyPressed(KeyEvent arg0) {}
+				});
+				item.setField(configField);
+				cp.add(item.getField());
+				
+				this.parserItems.add(item);
+			}
+			
+		}
+		cp.repaint();
+	}
+	
+	private void paramChanged(KeyEvent e) {
+		for(GParserItem item : this.parserItems) {
+			if(item.getField().equals(e.getSource())) {
+				item.getParser().setParam(item.getLabel().getText(), item.getField().getText());
+			}
+		}
+	}
+	
+	
 
 	// Ende Ereignisprozeduren
 

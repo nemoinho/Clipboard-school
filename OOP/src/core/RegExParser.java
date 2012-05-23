@@ -53,7 +53,7 @@ public class RegExParser implements Parser, Plugin {
 	public void loadPlugin(PluginLoader loader) throws Exception {}
 	
 	public Parser getParser() {
-		return this;
+		return new RegExParser();
 	}
 
 	@Override
