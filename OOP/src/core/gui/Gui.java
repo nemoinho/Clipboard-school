@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
@@ -27,8 +26,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import core.Constants;
 import core.Manager;
@@ -37,7 +34,7 @@ import core.Manager;
  * @author nemoinho
  * @version 1.1
  */
-public class Gui implements Runnable, ActionListener, ChangeListener, Observer {
+public class Gui implements Runnable, ActionListener, Observer {
 	private static final String WINDOW_TITLE = "Clipboard";
 	private static final String ENTRIES_LABEL_TEXT = "Clipboard History";
 	private static final String DELETE_ENTRY_BUTTON_TEXT = "Del";
@@ -99,7 +96,6 @@ public class Gui implements Runnable, ActionListener, ChangeListener, Observer {
 		createProfileJButton.addActionListener(this);
 		deleteProfileJButton.addActionListener(this);
 		parserConfigJButton.addActionListener(this);
-		actParserJCheckBox.addActionListener(this);
 	}
 
 	@Override
@@ -112,7 +108,6 @@ public class Gui implements Runnable, ActionListener, ChangeListener, Observer {
 		if(_case == Constants.OBSERVE_ENTRY && entriesJList != null) {
 			DefaultListModel listModel = (DefaultListModel)entriesJList.getModel();
 			listModel.addElement(manager.getEntries().lastElement().getOriginal());
-			parsedJTextField.setText(manager.getEntries().lastElement().getModified());
 		}
 	}
 
@@ -126,15 +121,6 @@ public class Gui implements Runnable, ActionListener, ChangeListener, Observer {
 			deleteProfile();
 		}else if(evt.getSource() == parserConfigJButton){
 			configureParser();
-		}else if(evt.getSource() == actParserJCheckBox){
-			manager.setProfile(actParserJCheckBox.isSelected() ? profileJComboBox.getSelectedItem().toString() : null);
-		}
-	}
-
-	@Override
-	public void stateChanged(ChangeEvent e) {
-		if(e.getSource() == actParserJCheckBox){
-			manager.setProfile(actParserJCheckBox.isSelected() ? profileJComboBox.getSelectedItem().toString() : null);
 		}
 	}
 	
@@ -194,13 +180,6 @@ public class Gui implements Runnable, ActionListener, ChangeListener, Observer {
 	private void buildWindow(String windowTitle) {
 		initializeComponents(windowTitle);
 		addAllComponents();
-		Set<String> prof = manager.getProfileSet();
-		int i = 0;
-		for(String name : prof){
-			profileJComboBox.insertItemAt(name, i++);
-		}
-		actParserJCheckBox.setSelected(true);
-		profileJComboBox.setSelectedIndex(0);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (d.width - window.getSize().width) / 2;
 		int y = (d.height - window.getSize().height) / 2;
@@ -218,7 +197,9 @@ public class Gui implements Runnable, ActionListener, ChangeListener, Observer {
 		entriesJLabel = new JLabel(ENTRIES_LABEL_TEXT);
 	    DefaultListModel model = new DefaultListModel();
 		entriesJList = new JList(model);
+		entriesJList.setVisibleRowCount(8);
 		entriesJScrollPane = new JScrollPane(entriesJList);
+		entriesJScrollPane.setPreferredSize(new Dimension(MAIN_LIST_WIDTH, MAIN_LIST_HEIGHT));
 		entriesJList.setVisible(true);
 		deleteEntryJButton = new JButton(DELETE_ENTRY_BUTTON_TEXT);
 		profileJComboBox = new JComboBox();
@@ -249,7 +230,6 @@ public class Gui implements Runnable, ActionListener, ChangeListener, Observer {
 		grid.weighty = 1;
 		addComponent(0, 1, 4, 1, entriesJScrollPane, new Insets(STANDARD_COMPONENT_INSET,
 				MAIN_WINDOW_INSET, STANDARD_COMPONENT_INSET, MAIN_WINDOW_INSET));
-		entriesJScrollPane.setPreferredSize(new Dimension(MAIN_LIST_WIDTH, MAIN_LIST_HEIGHT));
 		grid.weighty = .0;
 		addComponent(2, 2, 2, 1, deleteEntryJButton, new Insets(
 				STANDARD_COMPONENT_INSET, STANDARD_COMPONENT_INSET, deleteButtonSpacer,
