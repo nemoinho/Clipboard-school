@@ -31,12 +31,15 @@ public class GParser extends JFrame {
 	private Manager manager;
 	private Container cp;
 	private ArrayList<GParserItem> parserItems = new ArrayList<GParserItem>();
+	
+	private ArrayList<Parser> initialParser = new ArrayList<Parser>();
 	// Ende Variablen
 
 	public GParser(String title, Manager manager) {
 		// Frame-Initialisierung
 		super(title);
 		this.manager = manager;
+		this.setInitialParser();
 		/*
 		 * addWindowListener(new WindowAdapter() { public void
 		 * windowClosing(WindowEvent evt) { this.dispose(); } });
@@ -97,6 +100,34 @@ public class GParser extends JFrame {
 		setVisible(true);
 	}
 
+	private void setInitialParser() {
+		Profile prof = manager.getProfile();
+		for(Parser p : prof.getParser()) {
+			Parser newParser = p.getParser();
+			newParser.setName(p.getName());
+			for(String key : p.getParamNames()) {
+				newParser.setParam(key, p.getParams().get(key));
+			}
+			this.initialParser.add(newParser);
+		}
+	}
+	
+	private void resetParser() {
+		Profile prof = manager.getProfile();
+		ArrayList<Parser> current = prof.getParser();
+		
+		for(int i = 0; i < current.size(); i++) {
+			Parser p = current.get(i);
+			Parser old = this.initialParser.get(i);
+			Set<String> params = old.getParamNames();
+
+			for(String key : params) {
+				p.setParam(key, old.getParams().get(key));
+			}
+			
+		}
+	}
+
 	// Anfang Ereignisprozeduren
 	public void btnSaveActionPerformed(ActionEvent evt) {
 		int i;
@@ -117,6 +148,7 @@ public class GParser extends JFrame {
 	}
 
 	public void btnCancelActionPerformed(ActionEvent evt) {
+		this.resetParser();
 		this.dispose();
 	}
 	
@@ -129,12 +161,12 @@ public class GParser extends JFrame {
 	}
 	
 	private void parserConfig(Parser p) {
-		if(this.parserItems != null) {
+		if(this.parserItems.size() > 0) {
 			for(GParserItem o : this.parserItems) {
 				cp.remove(o.getLabel());
 				cp.remove(o.getField());
-				this.parserItems.remove(o);
 			}
+			this.parserItems.removeAll(this.parserItems);
 		}
 		int i = 0;
 		int x = 180;

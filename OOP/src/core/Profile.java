@@ -79,7 +79,7 @@ public class Profile {
 	public Parser getParserByName(String name) {
 		for(Parser p : this.parserList) {
 			String pName = p.getName();
-			if(pName.contains(name)) {
+			if(pName.equals(name)) {
 				return p;
 			}
 		}
