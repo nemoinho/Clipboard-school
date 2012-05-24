@@ -7,12 +7,13 @@
  */
 package core.plugin.interfaces;
 
+import core.exceptions.PluginInternalException;
+
 public interface Plugin {
-	public final String pluginName = "";
 	/**
 	 * this method is needed to load the Plugin
 	 * 
-	 * @throws Exception
+	 * @throws PluginInternalException
 	 * @param loader
 	 *            the pluginloader class witch loads the plugin
 	 */
@@ -21,14 +22,14 @@ public interface Plugin {
 	/**
 	 * this method is needed to start the plugin
 	 * 
-	 * @throws Exception
+	 * @throws PluginInternalException
 	 */
 	public void startPlugin() throws Exception;
 
 	/**
 	 * this method is needed to stop the plugin
 	 * 
-	 * @throws Exception
+	 * @throws PluginInternalException
 	 */
 	public void stopPlugin() throws Exception;
 }

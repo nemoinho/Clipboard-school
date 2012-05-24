@@ -49,6 +49,14 @@ public class Manager extends Observable implements Observer {
 		return entries;
 	}
 	
+	public boolean removeEntry(int index) {
+		if(entries.size() > index){
+			entries.remove(index);
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -97,7 +105,7 @@ public class Manager extends Observable implements Observer {
 
 	@Override
 	public void update(Observable obs, Object o){
-		if(o instanceof String){
+		if(o instanceof String && (entries.size() == 0 || !entries.lastElement().getOriginal().equals((String)o))){
 			Entry ent = new Entry((String)o);
 			String entry = (String)o;
 			if(activeProfile != null){
@@ -113,7 +121,7 @@ public class Manager extends Observable implements Observer {
 				notifyObservers(Constants.OBSERVE_ENTRY);
 			}
 			clipboard.setEntry(entry);
-		} 
+		}
 	}
 
 	public static void main(String[] args){

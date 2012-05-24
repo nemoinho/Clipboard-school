@@ -10,8 +10,11 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
@@ -26,6 +29,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import core.Constants;
 import core.Manager;
@@ -34,7 +39,7 @@ import core.Manager;
  * @author nemoinho
  * @version 1.1
  */
-public class Gui implements Runnable, ActionListener, Observer {
+public class Gui implements Runnable, ActionListener, Observer, ListSelectionListener{
 	private static final String WINDOW_TITLE = "Clipboard";
 	private static final String ENTRIES_LABEL_TEXT = "Clipboard History";
 	private static final String DELETE_ENTRY_BUTTON_TEXT = "Del";
@@ -44,7 +49,7 @@ public class Gui implements Runnable, ActionListener, Observer {
 	private static final String PARSED_LABEL_TEXT = "geparster Text";
 	private static final int MAIN_WINDOW_INSET = 10;
 	private static final int STANDARD_COMPONENT_INSET = 2;
-	private static final int MAIN_LIST_WIDTH = 185;
+	private static final int MAIN_LIST_WIDTH = 285;
 	private static final int MAIN_LIST_HEIGHT = 225;
 	
 	private JFrame window = null;
@@ -96,6 +101,9 @@ public class Gui implements Runnable, ActionListener, Observer {
 		createProfileJButton.addActionListener(this);
 		deleteProfileJButton.addActionListener(this);
 		parserConfigJButton.addActionListener(this);
+		actParserJCheckBox.addActionListener(this);
+		profileJComboBox.addActionListener(this);
+		entriesJList.addListSelectionListener(this);
 	}
 
 	@Override
@@ -103,11 +111,12 @@ public class Gui implements Runnable, ActionListener, Observer {
 		// arg0 : egal
 		// arg1 : (String) case der aufgetreten ist.
 		String _case = (String) arg1;
-		System.out.println(_case);
 		
 		if(_case == Constants.OBSERVE_ENTRY && entriesJList != null) {
 			DefaultListModel listModel = (DefaultListModel)entriesJList.getModel();
 			listModel.addElement(manager.getEntries().lastElement().getOriginal());
+			parsedJTextField.setText(manager.getEntries().lastElement().getModified());
+			deleteEntryJButton.setEnabled(true);
 		}
 	}
 
@@ -121,6 +130,18 @@ public class Gui implements Runnable, ActionListener, Observer {
 			deleteProfile();
 		}else if(evt.getSource() == parserConfigJButton){
 			configureParser();
+		}else if(evt.getSource() == actParserJCheckBox){
+			manager.setProfile(actParserJCheckBox.isSelected() ? profileJComboBox.getSelectedItem().toString() : null);
+		}else if(evt.getSource() == profileJComboBox){
+			setCurrentProfile();
+		}
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent arg0) {
+		int idx = entriesJList.getSelectedIndex();
+		if(idx >= 0){
+			parsedJTextField.setText(manager.getEntries().get(idx).getModified());
 		}
 	}
 	
@@ -128,7 +149,19 @@ public class Gui implements Runnable, ActionListener, Observer {
 	 * deletes an clipboard entry from history
 	 */
 	private void deleteEntry(){
-		
+		DefaultListModel listModel = (DefaultListModel)entriesJList.getModel();
+		int[] idx = entriesJList.getSelectedIndices();
+		for(int i = idx.length; i-->0 ;){
+			if(manager.removeEntry(idx[i])){
+				listModel.remove(idx[i]);
+			}
+		}
+		if(listModel.size() <= 0){
+			deleteEntryJButton.setEnabled(false);
+			parsedJTextField.setText("");
+		}else{
+			entriesJList.setSelectedIndex(entriesJList.getLastVisibleIndex());
+		}
 	}
 	
 	/**
@@ -161,7 +194,7 @@ public class Gui implements Runnable, ActionListener, Observer {
 	 * Will update the profile, which process the entries
 	 */
 	private void setCurrentProfile(){
-		int index = profileJComboBox.getSelectedIndex();
+		manager.setProfile(profileJComboBox.getSelectedItem().toString());
 	}
 	
 	/**
@@ -180,6 +213,13 @@ public class Gui implements Runnable, ActionListener, Observer {
 	private void buildWindow(String windowTitle) {
 		initializeComponents(windowTitle);
 		addAllComponents();
+		Set<String> prof = manager.getProfileSet();
+		int i = 0;
+		for(String name : prof){
+			profileJComboBox.insertItemAt(name, i++);
+		}
+		actParserJCheckBox.setSelected(true);
+		profileJComboBox.setSelectedIndex(0);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (d.width - window.getSize().width) / 2;
 		int y = (d.height - window.getSize().height) / 2;
@@ -197,18 +237,18 @@ public class Gui implements Runnable, ActionListener, Observer {
 		entriesJLabel = new JLabel(ENTRIES_LABEL_TEXT);
 	    DefaultListModel model = new DefaultListModel();
 		entriesJList = new JList(model);
-		entriesJList.setVisibleRowCount(8);
 		entriesJScrollPane = new JScrollPane(entriesJList);
-		entriesJScrollPane.setPreferredSize(new Dimension(MAIN_LIST_WIDTH, MAIN_LIST_HEIGHT));
 		entriesJList.setVisible(true);
 		deleteEntryJButton = new JButton(DELETE_ENTRY_BUTTON_TEXT);
+		deleteEntryJButton.setEnabled(false);
 		profileJComboBox = new JComboBox();
 		createProfileJButton = new JButton(CREATE_PROFILE_BUTTON_TEXT);
 		deleteProfileJButton = new JButton(DELETE_PROFILE_BUTTON_TEXT);
 		actParserJCheckBox = new JCheckBox();
 		parserConfigJButton = new JButton(PARSER_CONFIG_BUTTON_TEXT);
 		parsedJLabel = new JLabel(PARSED_LABEL_TEXT);
-		parsedJTextField = new JTextField();		
+		parsedJTextField = new JTextField();
+		parsedJTextField.setEditable(false);
 	}
 	
 	/**
@@ -230,6 +270,7 @@ public class Gui implements Runnable, ActionListener, Observer {
 		grid.weighty = 1;
 		addComponent(0, 1, 4, 1, entriesJScrollPane, new Insets(STANDARD_COMPONENT_INSET,
 				MAIN_WINDOW_INSET, STANDARD_COMPONENT_INSET, MAIN_WINDOW_INSET));
+		entriesJScrollPane.setPreferredSize(new Dimension(MAIN_LIST_WIDTH, MAIN_LIST_HEIGHT));
 		grid.weighty = .0;
 		addComponent(2, 2, 2, 1, deleteEntryJButton, new Insets(
 				STANDARD_COMPONENT_INSET, STANDARD_COMPONENT_INSET, deleteButtonSpacer,

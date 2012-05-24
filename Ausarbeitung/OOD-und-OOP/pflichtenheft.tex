@@ -1,0 +1,144 @@
+\documentclass[a4paper,11pt,abstracton,titlepage]{scrartcl}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{eurosym}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{pdfpages}
+
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% die Vorgaben der Prüfungsarbeit... etwas hässlich
+\geometry{a4paper,left=25mm,right=25mm, top=3cm, bottom=3cm}
+%\parindent 80pt
+
+\setlength{\parskip}{10em}
+\title{Clipboard-Manager\\Pflichtenheft}
+\author{Tobias Schult \\  Simon Sperling \and  Felix Nehrke \\  Wojciech
+Rydzewski} 
+\date{15. Mai 2012}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+% die Vorgaben der Prüfungsarbeit... etwas hässlich
+\setlength{\parskip}{1em}
+\setcounter{page}{1}
+
+
+\section{Zielbestimmungen} 
+Das Ziel ist es, eine Software in Java zur Überwachung und Manipulation des
+Zwischenspeichers zu entwickeln.  Dazu wird eine Dokumentation erstellt und am
+29. Mai 2012 durch den CEO der Bytehawks SE an die G18 überreicht.  Die
+Dokumentation enthält genaue Beschreibungen über die Entwicklung der Software,
+das objektorientierte Design und eine Funktionsbeschreibung des Programms.  Es
+wird am 25. Mai 2012 eine Entwicklerpräsentation durch die Entwickler der
+Bytehawks SE abgehalten, dabei wird die Entwicklung und Funktionsweise
+vorgestellt. Am 29. Mai 2012 findet eine Messe statt in der das Produkt
+präsentiert wird.
+
+\subsection{Grenzkriterien} 
+Für die Entwicklung muss Java\texttrademark  6 verwendet werden. Ein
+Programmupgrade für Java \texttrademark 7 wird auf Nachfrage zur Verfügung
+gestellt.  Die Grundfunkitonalität besteht aus Lesen und Schreiben des
+Zwischenspeichers sowie Speichern des Verlaufs.  Die einzelnen Parser werden
+dynamisch nach Bedarf geladen und verwendet.  Unter dem Abschnitt
+Wunschkriterien werden die Parser näher erläutert.  
+
+\subsection{Wunschkriterien}
+Die Software wird durch Plugins wie z.B. Parser erweiterbar sein. Dazu werden
+im Standardpaket Parser mitgeliefert. Im Standardpaket sind folgende Parser
+enthalten: \newline \begin{itemize} \item RegEx-Parser (Parser zum definieren
+eigener RegEx Pattern) \item ROT13-Parser (Parser zum de-/codieren von ROT13)
+\end{itemize} \newline Jeder Parser bekommt Input und gibt den Output nach dem
+EVA (Eingabe Verarbeitung Ausgabe) Prinzip aus. Ein Beispiel dazu: der Parser
+bekommt die Eingabe "`Hallo Welt"' nun soll der Parser diese Eingabe ROT13
+verschlüsseln.  Als Ausgabe gibt der Parser "`Unyyb Jryg"' zurück.  Man kann in
+den Einstellungen die jeweiligen Parser auswählen.
+
+\subsection{Abgenzungskriterien}
+Das Programm erfüllt nur die Funktionalitäten welche beschrieben sind.  Durch
+das Pluginssystem, lassen sich später nachträglich, neue Parser implementieren
+oder vorhandene können ausgetauscht/aktualisiert werden.  
+
+\section{Produkteinsatz}
+Das Einsatzgebiet dieser Software ist überwiegend bei Entwicklern angesiedelt.
+Die Software vereinfacht das Manipulieren von Zwischenspeichereinträgen. Dennoch
+kann das Produkt auch privat oder geschäftlich genutzt werden.  Ein Beispiel für
+ein privates Nutzungsszenario könnte folgendermaßen aussehen: Jemand kopiert von
+Word den Text in den Zwischenspeicher, dieser soll verschlüsselt an eine andere
+Person geschickt werden. Beim Kopieren in den Zwischenspeicher kommt das Produkt
+zum Einsatz und verschlüsselt den Eintrag. Beim Einfügen in die E-Mail wird das
+System nun die verschlüsselte Nachricht zum Einfügen verwenden. Außerdem kann
+man, wenn es der Parser zulässt, diesen konfigurieren.
+
+\subsection{Anwendungsbereiche}
+Ein Anwendungsbereich wird in der Entwicklung oder im Vertrieb sein, um das
+Kopieren von formatierten Text sehr zu vereinfachen.  
+
+\subsection{Zielgruppe}
+Zielgruppe für dieses Produkt sind Personen die viel Text kopieren müssen und
+dabei jedesmal Formatierung löschen oder ähnliche Veränderungen vornehmen
+müssen.  
+
+\section{Produktkonfiguration}
+Für das Produkt wird Java\texttrademark  6 benötigt. Durch den Einsatz von
+Java\texttrademark  ist dieses Programm theoretisch auf Betriebssystemen mit
+Java\texttrademark  6 lauffähig.  
+
+\section{Benutzerschnittstelle}
+Die Benutzerschnittstelle besteht aus einer Konfigurationsoberfläche.  In dieser
+Oberfläche kann der Benutzer seinen Zwischenspeicherverlauf sehen und die
+einzelenen Profile können eingestellen. In den Profilen können die zu
+verwendenden Parser ausgewählt werden. 
+
+\section{Qualitäts-Zielbestimmungen}
+Das Programm kann den Zwischenspeicher anzeigen und durch verschiedene Parser
+verändern. Diese Parser können frei definiert werden. Desweiteren sind in der
+Auslieferung zwei funktionsfähige Parser enthalten.
+
+\section{Globale Testfälle} 
+Die Testfälle betreffen das Grundprogramm und die Standard-Parser.  Es wird bei
+den Tests darauf geachtet, dass die Funktionalität sichergestellt ist.  Diese
+Tests werden auf Windows und auf Linux durchgeführt.
+
+
+\section{Entwicklungs-Konfiguration}
+Die Entwicklungskonfiguration besteht aus meheren Linux-Systemen und einem
+Windows-System. Diese Systeme verwenden OpenJDK und die offizielle Oracle  JDK.
+
+\section{Ergänzungen}
+Die Software ist in mehrere Teile unterteilt zum Einen den Kernel (Core) mit den
+Grundfunktionalitäten, d.h. lesen/schreiben des Zwischenspeichers, zum Anderen
+das Plugin System welches die Funktionalität beliebig erweitert. Aufgebaut auf
+den Core ist die GUI nach der Schichtenarchitektur. Folgendes Beispiel zeigt die
+Schichtenarchitektur.
+\newline \begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.7]{Schichtenarchitektur} 
+\caption{Bild der geplanten Schichtenarchitektur} 
+\end{figure} 
+\newpage 
+
+\section{Unterschriften}
+Mit Unterschrift dieses Pflichtenheft stimmen beide
+Parteien den, in diesem Dokument aufgeführten Bedingungen und Voraussetzungen
+zu.  
+\newline\newline 
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\newline Auftraggeber
+(G18) 
+\newline \newline\newline
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+\newline Auftragnehmer (Bytehawks SE)
+\newline 
+
+\end{document}

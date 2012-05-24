@@ -55,14 +55,29 @@ public class GParser extends JFrame {
 		cp.setLayout(null);
 		// Anfang Komponenten
 		
-		
 		Vector<String> parserList = new Vector<String>();
 		Profile profile = manager.getProfile();
+		
 		for(Parser p : profile.getParser()) {
 			parserList.add(p.getName());
 		}
 		jList1 = new JList();
 		jList1.setListData(parserList);
+		
+		ArrayList<Parser> activeParser = profile.getActiveParser();
+		int[] indices = new int[activeParser.size()];
+		for(int i=0 ; i < jList1.getModel().getSize() ; i++) {
+			String element = (String)jList1.getModel().getElementAt(i);
+			int j = 0;
+			for(Parser p : activeParser) {
+				if(p.getName().equals(element)) {
+					indices[j++] = i;
+				}
+			}
+		}
+		jList1.setSelectedIndices(indices);
+		
+		
 		jList1.addListSelectionListener(new ListSelectionListener() {
 			
 			@Override
@@ -75,6 +90,8 @@ public class GParser extends JFrame {
 		jList1.setBounds(16, 8, 137, 153);
 		
 		cp.add(jList1);
+		parserSelected();
+		
 		btnSave.setBounds(16, 176, 59, 25);
 		btnSave.setText("Save");
 		cp.add(btnSave);
@@ -105,9 +122,13 @@ public class GParser extends JFrame {
 		for(Parser p : prof.getParser()) {
 			Parser newParser = p.getParser();
 			newParser.setName(p.getName());
-			for(String key : p.getParamNames()) {
-				newParser.setParam(key, p.getParams().get(key));
-			}
+			try {
+				for(String key : p.getParamNames()) {
+					newParser.setParam(key, p.getParams().get(key));
+				}
+			} catch (Exception e) {
+				// ignore
+			} 
 			this.initialParser.add(newParser);
 		}
 	}
@@ -120,9 +141,12 @@ public class GParser extends JFrame {
 			Parser p = current.get(i);
 			Parser old = this.initialParser.get(i);
 			Set<String> params = old.getParamNames();
-
-			for(String key : params) {
-				p.setParam(key, old.getParams().get(key));
+			try {
+				for(String key : params) {
+					p.setParam(key, old.getParams().get(key));
+				}
+			} catch (Exception e) {
+				// ignore
 			}
 			
 		}
@@ -137,7 +161,9 @@ public class GParser extends JFrame {
 		
 		
 		Profile profile = manager.getProfile();
-		
+		for(Parser p : profile.getParser()) {
+			profile.removeFromActive(p);
+		}
 		for (String sp : selectedParser) {
 			Parser p = profile.getParserByName(sp);
 			profile.addToActive(p);
@@ -154,10 +180,10 @@ public class GParser extends JFrame {
 	
 	private void parserSelected() {
 		Profile profile = manager.getProfile();
-		// TODO: Fix manager / GUI to actually CHANGE the active Profile.
-		System.out.println(profile);
-		Parser p = profile.getParserByName((String)jList1.getSelectedValue());
-		parserConfig(p);
+		if(jList1.getSelectedIndex() >= 0) {
+			Parser p = profile.getParserByName((String)jList1.getSelectedValue());
+			parserConfig(p);
+		}	
 	}
 	
 	private void parserConfig(Parser p) {
@@ -171,35 +197,39 @@ public class GParser extends JFrame {
 		int i = 0;
 		int x = 180;
 		int y = 30;
-		for(String param : p.getParamNames()) {
-			GParserItem item = new GParserItem();
-			JLabel label = new JLabel(param);
-			label.setBounds(x, 5 + y * i++, 200, y);
-			item.setLabel(label);
-			
-			cp.add(item.getLabel());
-			
-			item.setParser(p);
-			Object value = p.getParams().get(param);
-			if(value instanceof String) {
-				JTextField configField = new JTextField((String)value);
-				configField.setBounds(x, 5 + y * i++, 200, 30);
-				configField.addKeyListener(new KeyListener() {
-					@Override
-					public void keyTyped(KeyEvent arg0) {}
-					@Override
-					public void keyReleased(KeyEvent arg0) {
-						paramChanged(arg0);
-					}
-					@Override
-					public void keyPressed(KeyEvent arg0) {}
-				});
-				item.setField(configField);
-				cp.add(item.getField());
+		try { 
+			for(String param : p.getParamNames()) {
+				GParserItem item = new GParserItem();
+				JLabel label = new JLabel(param);
+				label.setBounds(x, 5 + y * i++, 200, y);
+				item.setLabel(label);
 				
-				this.parserItems.add(item);
+				cp.add(item.getLabel());
+				
+				item.setParser(p);
+				Object value = p.getParams().get(param);
+				if(value instanceof String) {
+					JTextField configField = new JTextField((String)value);
+					configField.setBounds(x, 5 + y * i++, 200, 30);
+					configField.addKeyListener(new KeyListener() {
+						@Override
+						public void keyTyped(KeyEvent arg0) {}
+						@Override
+						public void keyReleased(KeyEvent arg0) {
+							paramChanged(arg0);
+						}
+						@Override
+						public void keyPressed(KeyEvent arg0) {}
+					});
+					item.setField(configField);
+					cp.add(item.getField());
+					
+					this.parserItems.add(item);
+				}
+				
 			}
-			
+		} catch (Exception e) {
+			// ignore
 		}
 		cp.repaint();
 	}
@@ -225,3 +255,4 @@ public class GParser extends JFrame {
 		new GParser("parser", new Manager());
 	}
 }
+

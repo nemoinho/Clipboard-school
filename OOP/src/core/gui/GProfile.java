@@ -2,6 +2,7 @@ package core.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 /**
@@ -57,6 +58,24 @@ public class GProfile extends JDialog {
 				GProfile.this.name = jtProfileName.getText();
 				GProfile.this.dispose();
 			}
+		});
+		
+		jtProfileName.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				if(arg0.getKeyCode() == 10) {
+					GProfile.this.saved = true;
+					GProfile.this.name = jtProfileName.getText();
+					GProfile.this.dispose();
+				}
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
 		});
 
 		// Ende Komponenten
