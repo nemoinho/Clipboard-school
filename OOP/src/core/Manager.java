@@ -6,9 +6,13 @@ import java.util.Vector;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.SwingUtilities;
+
 import core.Clipboard;
 import core.Entry;
 import core.Constants;
+import core.gui.Gui;
 
 public class Manager extends Observable implements Observer {
 	private Clipboard clipboard = null;
@@ -125,6 +129,8 @@ public class Manager extends Observable implements Observer {
 	}
 
 	public static void main(String[] args){
-		Manager manager = new Manager();
+		Manager man  = new Manager();
+		Gui test = new Gui(man);
+		SwingUtilities.invokeLater(test);
 	}
 }
