@@ -1,0 +1,31 @@
+\section{Profile / Parser}
+\begin{frame}{Profile / Parser}
+	\begin{block}{Profil}
+		Speichern von unterschiedlichen Einstellungen
+	\end{block}
+	\begin{block}{Parser}
+		Veränderung der kopierten Daten
+	\end{block}
+	\begin{block}{Vorschau}
+		Ein Beispiel wie diese Komponenten interagieren
+	\end{block}
+\end{frame}
+
+\subsection{Parser - unter der Haube}
+\begin{frame}[fragile]{Parser - unter der Haube}
+\begin{lstlisting}[caption=RegExParser.java]{turnier}
+public RegExParser() {
+  params = new HashMap<String, Object>();
+  params.put("match", "");
+  params.put("replace", "");
+  name = "RegEx Parser";
+}
+
+public String parse(String input) {
+  return input.replaceAll(
+    (String)params.get("match"), 
+    (String)params.get("replace")
+  );
+}
+\end{lstlisting}
+\end{frame}

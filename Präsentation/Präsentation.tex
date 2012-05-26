@@ -1,20 +1,49 @@
-\documentclass[hyperref={pdfpagelabels=false}]{beamer}
+\documentclass[hyperref={pdfpagelabels=false},xcolor=dvipsnames]{beamer}
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb}
 \usepackage{lmodern}
 \usepackage{ngerman}
-\usetheme{Warsaw}
-\useinnertheme{circles}
-\useoutertheme{smoothbars}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{remreset}
+\usepackage{verbatim} 
+\usepackage{listings}
+\usepackage{courier}
+\lstset{
+	basicstyle=\footnotesize\ttfamily,
+		showstringspaces=false,
+		numbers=left,
+		tabsize=4,
+		extendedchars=true,
+		frame=single,
+		frame=topline,
+		xleftmargin=20pt,
+		framexleftmargin=20pt,
+		framextopmargin=3pt,
+		framexbottommargin=3pt,
+		language=Java
+}
+\usepackage{caption}
+\DeclareCaptionFont{listingcaptions}{\color{black}}
+\captionsetup[lstlisting]{
+	labelfont=listingcaptions,
+		textfont=listingcaptions,
+		singlelinecheck=false,
+		margin=0pt,
+		font={bf,footnotesize}
+}
 
-\setbeamercovered{transparent=50}
+\usetheme{SchulePresentation}
+\useinnertheme{circles}
+
 \beamertemplatenavigationsymbolsempty
 
-\title[Objektorientiertes Projekt]{Clipboard-school -- Von der OOA zur OOP}
-\author[F. \and S. \and T. \and W. ]{
-  {\sc F. \and S. \and T. \and W. }}
-\institute{Ausbildung Fachinformatiker AE}
-\date{Block 2.3}
+\title[Bytehawks SE]{Clipboardmanager}
+\author[F. Nehrke\and S. Sperling\and T. Schult\and W. Rydzewski]{
+	{\sc Felix Nehrke\and Simon Sperling\and Tobias Schult\and Wojciech Rydzewski}}
+\institute{Bytehawks SE}
+\date{25.05.2012}
 
 \begin{document}
 
@@ -23,7 +52,17 @@
 }
 
 \frame{
-  \tableofcontents
+	\tableofcontents
 }
+
+\include{Einleitung}
+
+\include{Profile}
+
+\include{Observer}
+
+\include{Pluginsystem}
+
+\include{Danke}
 
 \end{document}
