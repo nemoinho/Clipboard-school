@@ -1,5 +1,6 @@
 package core;
 
+import java.awt.datatransfer.DataFlavor;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.Vector;
@@ -19,6 +20,9 @@ public class Manager extends Observable implements Observer {
 	private Vector<Entry> entries = new Vector<Entry>();
 	private HashMap<String, Profile> profiles = new HashMap<String, Profile>();
 	private String activeProfile = null;
+	private boolean allowCopyFiles = true;
+	private boolean allowCopyImages = true;
+	private ArrayList<DataFlavor> fileFlavors = new ArrayList<DataFlavor>();
 
 	/**
 	 * Constructor build a Managementprogramm
@@ -27,6 +31,9 @@ public class Manager extends Observable implements Observer {
 		profiles.put("Default", new Profile());
 		setProfile("Default");
 		initClipboard();
+		setFileFlavors();
+		setAllowCopyFiles(true);
+		setAllowCopyImages(true);
 		addManagerToObservers();
 	}
 
@@ -106,6 +113,37 @@ public class Manager extends Observable implements Observer {
 	public Profile getProfile() {
 		return this.profiles.get(activeProfile);
 	}
+	
+	public void setAllowCopyFiles(boolean val) {
+		allowCopyFiles = val;
+		setFlavors();
+	}
+	
+	public void setAllowCopyImages(boolean val) {
+		allowCopyImages = val;
+		setFlavors();
+	}
+	
+	public void setFlavors(){
+		if(allowCopyFiles){ // Files können kopiert werden
+			clipboard.setDefinitlyExcludedDataFlavors(fileFlavors);
+		}else{ // Dateipfade werden im Manager behandelt!
+			clipboard.setDefinitlyExcludedDataFlavors(new ArrayList<DataFlavor>());
+		}
+		if(allowCopyImages){ // Bilder kopieren (true) oder Pfad archivieren (false)
+			clipboard.addDefinitlyExcludedDataFlavors(DataFlavor.imageFlavor);
+		}
+	}
+	
+	public void setFileFlavors(){
+		try {
+			fileFlavors.add(DataFlavor.javaFileListFlavor);
+			fileFlavors.add(new DataFlavor( "application/x-java-file-list" ));
+			fileFlavors.add(new DataFlavor( "x-special/gnome-copied-files" ));
+			fileFlavors.add(new DataFlavor("text/uri-list"));
+		} catch (ClassNotFoundException e) {
+		}
+	}
 
 	@Override
 	public void update(Observable obs, Object o){
@@ -130,7 +168,9 @@ public class Manager extends Observable implements Observer {
 
 	public static void main(String[] args){
 		Manager man  = new Manager();
+		SessionManagement session = new SessionManagement(man);
 		Gui test = new Gui(man);
+		test.setSessionManager(session);
 		SwingUtilities.invokeLater(test);
 	}
 }
