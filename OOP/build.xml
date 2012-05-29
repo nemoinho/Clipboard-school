@@ -34,20 +34,6 @@
 
 
 	<!-- generates the jar-file  -->
-	<target name="regp" depends="compile">
-		<jar jarfile="bin/plugins/RegExPlugin.jar"
-				basedir="bin"
-				includes="core/RegExParser* RegExPlugin.rsf">
-
-			<manifest>
-				<attribute name="Class-Path" value="${manifest.classpath}"/>
-			</manifest>
-
-		</jar>
-	</target>
-
-
-	<!-- generates the jar-file  -->
 	<target name="jar" depends="compile">
 		<jar jarfile="jar/${build.jar}"
 				basedir="bin"
@@ -73,6 +59,11 @@
 				<include name="*.sh"/>
 				<include name="*.bat"/>
 				<include name="*.properties"/>
+			</fileset>
+		</copy>		
+		<copy todir="delivery/${project.name}-${project.version}/plugins">
+			<fileset dir="plugins">
+				<include name="*.jar"/>
 			</fileset>
 		</copy>		
 	</target>
