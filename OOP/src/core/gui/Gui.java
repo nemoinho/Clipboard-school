@@ -10,19 +10,13 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -41,23 +35,10 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileSystemView;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
 
 import core.Constants;
 import core.Manager;
-import core.Parser;
+import core.SessionManagement;
 
 /**
  * @author nemoinho
@@ -69,9 +50,13 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 	public static final String FILE_MENU_ITEM_OPEN = "Öffnen";
 	public static final String FILE_MENU_ITEM_SAVE = "Speichern";
 	public static final String FILE_MENU_ITEM_SAVE_AS = "Speichern unter...";
+	public static final String FILE_MENU_ITEM_PARSE_URI = "Dateipfade parsen";
 	public static final String HELP_MENU_TITLE = "Hilfe";
 	public static final String HELP_MENU_ITEM_ABOUT = "Info";
 	public static final String HELP_MENU_ITEM_HELP = "Hilfehandbuch";
+	public static final String SETTINGS_MENU_TITLE = "Einstellungen";
+	public static final String SETTINGS_MENU_ITEM_ALLOW_COPY_FILES = "Dateipfade parsen";
+	public static final String SETTINGS_MENU_ITEM_ALLOW_COPY_IMAGES = "Grafikpfade parsen";
 	public static final String ENTRIES_LABEL_TEXT = "Clipboard History";
 	public static final String DELETE_ENTRY_BUTTON_TEXT = "Del";
 	public static final String CREATE_PROFILE_BUTTON_TEXT = "+";
@@ -89,9 +74,12 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 	private JMenuItem fileMenuOpenJMenuItem = null;
 	private JMenuItem fileMenuSaveJMenuItem = null;
 	private JMenuItem fileMenuSaveAsJMenuItem = null;
+	private JMenu settingsMenuJMenu = null;
+	private JMenuItem settingsMenuAllowCopyFilesJMenuItem = null;
+	private JMenuItem settingsMenuAllowCopyImagesJMenuItem = null;
 	private JMenu helpMenuJMenu = null;
 	private JMenuItem helpMenuAboutJMenuItem = null;
-	private JMenuItem helpMenuHelpJMenuItem = null;
+//	private JMenuItem helpMenuHelpJMenuItem = null;
 	private JLabel entriesJLabel = null;
 	private JList entriesJList = null;
 	private JScrollPane entriesJScrollPane = null;
@@ -109,6 +97,7 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 	private File fileToProfileSetup = null;
 	
 	private Manager manager = null;
+	private SessionManagement session = null;
 	private GProfile dialog = null;
 
 	/**
@@ -133,9 +122,16 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 			e.printStackTrace();
 		}
 	}
+	
+	public void setSessionManager(SessionManagement session) {
+		this.session = session;
+	}
 
 	@Override
 	public void run() {
+		if(this.session == null){
+			this.session = new SessionManagement(manager);
+		}
 		buildWindow(WINDOW_TITLE);
 		deleteEntryJButton.addActionListener(this);
 		createProfileJButton.addActionListener(this);
@@ -182,8 +178,13 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 			loadProfileConfiguration();
 		}else if(evt.getSource() == helpMenuAboutJMenuItem){
 			new GAbout(window);
+		}else if(evt.getSource() == settingsMenuAllowCopyFilesJMenuItem){
+			manager.setAllowCopyFiles(!settingsMenuAllowCopyFilesJMenuItem.isSelected());
+			settingsMenuAllowCopyImagesJMenuItem.setEnabled(settingsMenuAllowCopyFilesJMenuItem.isSelected());
+		}else if(evt.getSource() == settingsMenuAllowCopyImagesJMenuItem){
+			manager.setAllowCopyImages(!settingsMenuAllowCopyImagesJMenuItem.isSelected());
 		}else if(evt.getSource() instanceof JMenuItem){
-			System.out.println(((JMenuItem)evt.getSource()).getText());
+			System.out.println("Diese Komponente ist mit keiner Aktion verknüpft. "+((JMenuItem)evt.getSource()).getText());
 		}
 	}
 
@@ -198,67 +199,10 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 	public void saveProfileConfiguration(File file) {
 		if(file == null){
 			saveProfileConfiguration();
-		} else {
-			try {
-				Document doc = null;
-				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-				DocumentBuilder db;
-				db = dbf.newDocumentBuilder();
-
-				doc = db.newDocument();
-				Element root = doc.createElement("ClipboardManager");
-				for(String p : manager.getProfileSet()){
-					Element profile = doc.createElement("profile");
-					profile.setAttribute("name", p);
-					for(Parser a : manager.getProfiles().get(p).getActiveParser()){
-						Element activParser = doc.createElement("activeParser");
-						activParser.setAttribute("name",a.getName());
-						try {
-							for(String l : a.getParamNames()){
-								Element attr = doc.createElement("attribute");
-								attr.setAttribute("name", l);
-								Text attrVal = doc.createTextNode(a.getParams().get(l).toString());
-								attr.appendChild(attrVal);
-								activParser.appendChild(attr);
-							}
-						} catch (Exception e) {
-							// TODO: handle exception
-						}
-						profile.appendChild(activParser);
-					}
-					root.appendChild(profile);
-				}
-				doc.appendChild(root);
-				doc.setXmlVersion("1.0");
-				doc.setTextContent("text/xml");
-
-				try {
-					DOMSource domSource = new DOMSource(doc);
-					StringWriter writer = new StringWriter();
-					StreamResult result = new StreamResult(writer);
-					TransformerFactory tf = TransformerFactory.newInstance();
-					Transformer transformer = tf.newTransformer();
-					transformer.transform(domSource, result);
-					try {
-						FileWriter fw = new FileWriter(file);
-						fw.write(writer.toString());
-						fw.flush();
-						fw.close();
-			            fileToProfileSetup = file;
-			            fileMenuSaveJMenuItem.setEnabled(true);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				} catch (TransformerException ex) {
-					ex.printStackTrace();
-				}
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} else if(session.saveProfileConfiguration(file)){
+			fileToProfileSetup = file;
+			fileMenuSaveJMenuItem.setEnabled(true);
 		}
-//		StringBuffer fileContent = new StringBuffer();
 	}
 	
 	
@@ -278,6 +222,11 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
+            if(session.loadProfileConfiguration(file)){
+            	setProfiles();
+    			fileToProfileSetup = file;
+    			fileMenuSaveJMenuItem.setEnabled(true);
+            }
         } else {
         }		
 	}
@@ -341,6 +290,21 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 		new GParser("Parser", manager);
 	}
 	
+	private void setProfiles(){
+		int profileCount = profileJComboBox.getItemCount();
+		Set<String> prof = manager.getProfileSet();
+		int i = 0;
+		for(String name : prof){
+			profileJComboBox.insertItemAt(name, i++);
+		}
+		if(i>0){
+			for(int j=profileCount; j-->0; ){
+				profileJComboBox.removeItemAt(j);
+			}
+		}
+		profileJComboBox.setSelectedIndex(0);
+	}
+	
 	// Ab hier Fenster bauen
 
 	/**
@@ -350,13 +314,15 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 	private void buildWindow(String windowTitle) {
 		initializeComponents(windowTitle);
 		addAllComponents();
-		Set<String> prof = manager.getProfileSet();
-		int i = 0;
-		for(String name : prof){
-			profileJComboBox.insertItemAt(name, i++);
-		}
+//		Set<String> prof = manager.getProfileSet();
+//		int i = 0;
+//		for(String name : prof){
+//			profileJComboBox.insertItemAt(name, i++);
+//		}
+//		actParserJCheckBox.setSelected(true);
+//		profileJComboBox.setSelectedIndex(0);
+		setProfiles();
 		actParserJCheckBox.setSelected(true);
-		profileJComboBox.setSelectedIndex(0);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (d.width - window.getSize().width) / 2;
 		int y = (d.height - window.getSize().height) / 2;
@@ -396,19 +362,38 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 		mainMenu = new JMenuBar();
 
 		fileMenuJMenu = new JMenu(FILE_MENU_TITLE); // TODO
+		Insets ins = fileMenuJMenu.getMargin();
+		ins.right = ins.right+STANDARD_COMPONENT_INSET;
+		ins.left = ins.left+STANDARD_COMPONENT_INSET;
+		fileMenuJMenu.setMargin(ins);
 		mainMenu.add(fileMenuJMenu);
-//		fileMenuOpenJMenuItem = new JMenuItem(FILE_MENU_ITEM_OPEN);
-//		fileMenuOpenJMenuItem.addActionListener(this);
-//		fileMenuJMenu.add(fileMenuOpenJMenuItem);
+		fileMenuOpenJMenuItem = new JMenuItem(FILE_MENU_ITEM_OPEN);
+		fileMenuOpenJMenuItem.addActionListener(this);
+		fileMenuJMenu.add(fileMenuOpenJMenuItem);
+		
 		fileMenuSaveJMenuItem = new JMenuItem(FILE_MENU_ITEM_SAVE);
 		fileMenuSaveJMenuItem.setEnabled(false);
 		fileMenuSaveJMenuItem.addActionListener(this);
 		fileMenuJMenu.add(fileMenuSaveJMenuItem);
+		
 		fileMenuSaveAsJMenuItem = new JMenuItem(FILE_MENU_ITEM_SAVE_AS);
 		fileMenuSaveAsJMenuItem.addActionListener(this);
 		fileMenuJMenu.add(fileMenuSaveAsJMenuItem);
 
-		helpMenuJMenu = new JMenu(HELP_MENU_TITLE); // TODO
+		settingsMenuJMenu = new JMenu(SETTINGS_MENU_TITLE);
+		settingsMenuJMenu.setMargin(ins);
+		mainMenu.add(settingsMenuJMenu);
+		settingsMenuAllowCopyFilesJMenuItem = new JCheckBoxMenuItem(SETTINGS_MENU_ITEM_ALLOW_COPY_FILES);
+		settingsMenuAllowCopyFilesJMenuItem.addActionListener(this);
+		settingsMenuJMenu.add(settingsMenuAllowCopyFilesJMenuItem);
+		
+		settingsMenuAllowCopyImagesJMenuItem = new JCheckBoxMenuItem(SETTINGS_MENU_ITEM_ALLOW_COPY_IMAGES);
+		settingsMenuAllowCopyImagesJMenuItem.setEnabled(false);
+		settingsMenuAllowCopyImagesJMenuItem.addActionListener(this);
+		settingsMenuJMenu.add(settingsMenuAllowCopyImagesJMenuItem);
+
+		helpMenuJMenu = new JMenu(HELP_MENU_TITLE);
+		helpMenuJMenu.setMargin(ins);
 		mainMenu.add(helpMenuJMenu);
 //		helpMenuHelpJMenuItem = new JMenuItem(HELP_MENU_ITEM_HELP);
 //		helpMenuJMenu.add(helpMenuHelpJMenuItem);
@@ -515,7 +500,9 @@ public class Gui implements Runnable, ActionListener, Observer, ListSelectionLis
 	 */
 	public static void main(String[] args) {
 		Manager man  = new Manager();
+		SessionManagement session = new SessionManagement(man);
 		Gui test = new Gui(man);
+		test.setSessionManager(session);
 		SwingUtilities.invokeLater(test);
 	}
 

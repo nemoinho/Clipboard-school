@@ -14,9 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import javax.swing.JButton;
@@ -45,6 +43,7 @@ public class GAbout {
 		int y = (d.height - aboutDialog.getSize().height) / 2;
 		aboutDialog.setLocation(x, y);
 		aboutDialog.setVisible(true);
+		aboutDialog.setResizable(false);
 	}
 	
 	public void buildAboutDialog(JFrame owner) {

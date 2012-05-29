@@ -6,11 +6,13 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Observable;
 
 public class Clipboard extends Observable implements Runnable {
 
 	private String entry = null;
+	public static ArrayList<DataFlavor> definitlyExcludedDataFlavors = new ArrayList<DataFlavor>();
 
 	/**
 	 * Empty Constructor
@@ -23,7 +25,8 @@ public class Clipboard extends Observable implements Runnable {
 		for(;;){
 			String clip = getClipboard();
 			if(clip != null && !clip.equals(getEntry())){
-				setEntry(clip);
+				this.entry = clip;
+//				setEntry(clip);
 				setChanged();
 				notifyObservers(clip);
 			}
@@ -45,6 +48,11 @@ public class Clipboard extends Observable implements Runnable {
 		Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 		try {
 			if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				for(DataFlavor df : definitlyExcludedDataFlavors){
+					if(t.isDataFlavorSupported(df)){
+						return null;
+					}
+				}
 				String text = (String)t.getTransferData(DataFlavor.stringFlavor);
 				return text;
 			}
@@ -78,6 +86,22 @@ public class Clipboard extends Observable implements Runnable {
 	public void setEntry(String entry) {
 		this.entry = entry;
 		setClipboard(entry);
+	}
+	
+	public void addDefinitlyExcludedDataFlavors(DataFlavor df) {
+		definitlyExcludedDataFlavors.add(df);
+	}
+	
+	public void setDefinitlyExcludedDataFlavors(ArrayList<DataFlavor> df) {
+		definitlyExcludedDataFlavors = df;
+	}
+	
+	public void removeDefinitlyExcludedDataFlavors(DataFlavor df) {
+		for(int i=definitlyExcludedDataFlavors.size();i-->0;){
+			if(df.equals(definitlyExcludedDataFlavors.get(i))){
+				definitlyExcludedDataFlavors.remove(i);
+			}
+		}
 	}
 }
 
